@@ -1,0 +1,7 @@
+name: MCME-Action-Bar
+version: ${version}
+main: com.mcmiddleearth.actionbar.ActionBar
+api-version: 1.21
+authors: [_Drayz_]
+description: Custom Action Bar HUD/UI
+softdepend: [VentureChat]

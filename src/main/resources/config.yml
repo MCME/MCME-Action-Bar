@@ -1,0 +1,11 @@
+# How often the action bar will refresh
+# Must be lower than 60 ticks (3 seconds) as that is when the action bar fades away
+update-interval-ticks: 40
+
+chat-indicator:
+  prefix: "\uE128\uE128\uE128\uE064\uE004"  # negative-space chars from resource pack — fill in when ready
+  default: "\uE200"
+  channels:
+    global: "" # Display nothing
+    local: "\uE201"
+    tour: "\uE202"
