@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+
 import java.nio.file.Paths
 
 plugins {
@@ -55,5 +57,37 @@ java {
 tasks {
     runServer {
         minecraftVersion("1.21")
+    }
+}
+
+tasks.register('generateFontJson') {
+    group = 'resourcepack'
+    description = 'Generates default.json from hud-elements.groovy (computes ascents automatically)'
+
+    def manifest = file('resourcepack/hud-elements.groovy')
+    def output = file('resourcepack/assets/minecraft/font/default.json')
+
+    inputs.file(manifest)
+    outputs.file(output)
+
+    doLast {
+        def config = new ConfigSlurper().parse(manifest.toURI().toURL())
+        def providers = []
+
+        // HUD elements — ascent computed from elementId, no manual formula needed
+        config.hudElements.each { element ->
+            int elementId = element.elementId
+            int ascent = -(((elementId + 1024) << 13) + 4095)
+            element.glyphs.each { glyph ->
+                def provider = [type: 'bitmap', file: glyph.image, ascent: ascent, chars: [glyph['char']]]
+                if (element.height) provider.height = element.height as int
+                providers << provider
+            }
+        }
+
+        output.text = JsonOutput.prettyPrint(
+                JsonOutput.toJson([providers: providers])
+        )
+        println "Generated ${output} (${providers.size()} providers)"
     }
 }
