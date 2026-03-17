@@ -1,11 +1,30 @@
-# How often the action bar will refresh
-# Must be lower than 60 ticks (3 seconds) as that is when the action bar fades away
+# How often the action bar will refresh.
+# Must be lower than 60 ticks (3 seconds) as that is when the action bar fades away.
 update-interval-ticks: 40
 
+# ── Chat-channel indicator ────────────────────────────────────────────────────
+#
+# Each channel maps to a single Unicode glyph defined in the resource pack.
+# The glyph is positioned by the rendertype_text.vsh shader — no negative-space
+# prefix is needed, and the position is GUI-scale-invariant.
+#
+# Resource-pack requirements (see resourcepack/ in the plugin source):
+#   1. Add rendertype_text.vsh + rendertype_text.json to the resource pack.
+#   2. In your font provider, give each icon glyph the magic ascent value so
+#      the shader can detect and reposition it:
+#
+#        ascent = -((elementId + 1024) << 13 + 4095)
+#
+#      For element ID 1 (all chat-channel icons):
+#        ascent = -((1 + 1024) * 8192 + 4095) = -8 400 895
+#
+#   3. The xPixel / yPixel constants in the .vsh control fine positioning.
+#      Default: bottom-left corner, icon centre ≈ 9 GUI px from screen left.
+# ─────────────────────────────────────────────────────────────────────────────
 chat-indicator:
-  prefix: "\uE128\uE128\uE128\uE064\uE004"  # negative-space chars from resource pack — fill in when ready
+  # The glyph shown when no channel-specific entry matches.
   default: "\uE200"
   channels:
-    global: "" # Display nothing
-    local: "\uE201"
-    tour: "\uE202"
+    global: ""      # Display nothing for the global channel
+    local:  "\uE201"
+    tour:   "\uE202"
