@@ -25,9 +25,6 @@ public class ChatChannelHudElement implements HudElement {
         String symbol = resolveSymbol(channelName);
         if (symbol.isEmpty()) return null;
 
-        // No negative-space prefix needed: the resource-pack shader (rendertype_text.vsh)
-        // detects the icon glyph via its encoded ascent value and repositions it to the
-        // configured screen anchor, compensating for the player's GUI scale automatically.
         return Component.text(symbol);
     }
 

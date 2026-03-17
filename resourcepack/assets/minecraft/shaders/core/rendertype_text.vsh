@@ -5,6 +5,8 @@
 //
 //  How it works (mirrors BetterHud's technique):
 //
+// Extending the vanilla default vertex shader to detect HUD characters
+//
 //  Each HUD icon character has a huge *negative* ascent baked
 //  into the resource-pack font.  That pushes its vertex Y far
 //  below the visible screen (pos.y >= ui.y), which the shader
@@ -36,7 +38,6 @@
 
 uniform mat4 ProjMat;
 uniform mat4 ModelViewMat;
-uniform vec2 ScreenSize;
 uniform int FogShape;
 
 in vec3 Position;
@@ -44,7 +45,6 @@ in vec4 Color;
 in vec2 UV0;
 in ivec2 UV2;
 
-uniform sampler2D Sampler0;
 uniform sampler2D Sampler2;
 
 out vec4 vertexColor;
@@ -69,19 +69,16 @@ void main() {
     // ProjMat for the GUI pass is orthographic: proj[0][0] = 2 / guiWidth
     vec2 ui = ceil(2.0 / vec2(ProjMat[0][0], -ProjMat[1][1]));
 
-    vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
-
     // ── Detect MCME HUD glyphs ──────────────────────────────────
-    // Their huge negative ascent forces pos.y well below the screen
-    // (pos.y >= ui.y).  ProjMat[3].x == -1 confirms we are in the
-    // GUI render pass (orthographic, origin top-left).
-    if (pos.y >= ui.y && ProjMat[3].x == -1.0) {
+    bool isBelowScreen = pos.y >= ui.y;
+    bool isGuiPass     = ProjMat[3].x == -1.0; // orthographic GUI projection has origin top-left
+    if (isBelowScreen && isGuiPass) {
 
-        // Decode the element ID stored in the upper bits of pos.y.
+        // Shift out the lower bits to isolate the encoded marker and ID
         int encodedY = int(pos.y) >> HEIGHT_BIT;
 
-        // Bit MAGIC_BIT (= 10) of `encodedY` is our magic marker.
-        if (((encodedY >> MAGIC_BIT) & 1) == 1) {
+        bool hasMagicBit = ((encodedY >> MAGIC_BIT) & 1) == 1;
+        if (hasMagicBit) {
             int elementId = encodedY - MAGIC_OFFSET;
 
             // ── Step 1: move X origin to the left screen edge ──────
@@ -96,29 +93,26 @@ void main() {
             pos.y -= float((encodedY << HEIGHT_BIT) + ENCODE_FILLER);
             pos.y -= (ui.y - ACTION_BAR_Y);
 
-            // ── Step 3: anchor + pixel offset per element ───────────
+            // ── Step 3: anchor + offset per element ─────────────────
             //
             //   xPercent  0 = left edge   50 = centre   100 = right edge
             //   yPercent  0 = top          50 = centre   100 = bottom
             //
-            //   xOffset / yOffset: fine nudge *from* the anchor (GUI px).
-            //   Use whole-number values only to keep glyphs pixel-crisp
-            //   at all GUI scales.
+            //   xOffset / yOffset: fine nudge *from* the anchor, in GUI pixels.
+            //   1 GUI pixel = (GUI scale) physical pixels — so at GUI scale 2 one
+            //   unit here is 2 physical pixels, at scale 3 it is 3, etc.
+            //   Use whole-number values only to keep glyphs pixel-crisp at all scales.
+            //
+            //  The PNGs scale with the GUI scale so the offsets works at any GUI scale
             //
             float xPercent, yPercent;
-            float xPixelOffset, yPixelOffset;
+            float xOffset, yOffset;
 
             switch (elementId) {
                 // ── Chat-channel icon — bottom-left corner ──
                 case 1:
-                    // Font chars: \uE200 (default), \uE201 (local), \uE202 (tour)
-                    // All share element ID 1; their appearance differs only by glyph.
-                    // yPercent=100 + yOffset = |yOffset| px from screen bottom.
-                    // Increase |yOffset| to move UP, decrease to move DOWN.
-                    xPercent = 0.0;
-                    yPercent = 100.0;
-                    xPixelOffset = 9.0;    // left edge ≈ 4 px from screen left (9px icon)
-                    yPixelOffset = -10.0;  // px from screen bottom — tune this independently
+                    xPercent = 0.0; yPercent = 100.0;
+                    xOffset  = 9.0; yOffset  = -10.0;
                     break;
 
                 // ── Add future elements here ────────────────────────
@@ -128,27 +122,25 @@ void main() {
                 //     break;
 
                 default:
-                    // Unrecognised elementId
-                    // If an icon is misplaced, check that its elementId has a case here
-                    // and that the font ascent uses the matching encoding formula.
-                    xPercent = 0.0;
-                    yPercent = 100.0;
-                    xPixelOffset  = 0.0;
-                    yPixelOffset = -ACTION_BAR_Y;
+                    // Unrecognised elementId - If an icon is misplaced, check that its
+                    // elementId has a case here and that the font ascent uses the matching encoding formula.
+                    xPercent = 0.0; yPercent =  50.0;
+                    xOffset  = 0.0; yOffset  = -10.0;
                     break;
             }
 
-            pos.x += ui.x * (xPercent / 100.0) + xPixelOffset;
-            pos.y += ui.y * (yPercent / 100.0) + yPixelOffset;
+            pos.x += ui.x * (xPercent / 100.0) + xOffset;
+            pos.y += ui.y * (yPercent / 100.0) + yOffset;
         }
     }
 
     vec4 worldPos = ModelViewMat * vec4(pos, 1.0);
 
-    // Legacy fog distance (pre-1.21.2 fragment shader expects this single value).
+    // Mirrors vanilla — fog_distance() inlined since #moj_import is unavailable in resource packs.
     vertexDistance = FogShape == 0 ? length(worldPos.xyz)
                                    : max(length(worldPos.xz), abs(worldPos.y));
 
+    vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
     texCoord0  = UV0;
     gl_Position = ProjMat * worldPos;
 }
