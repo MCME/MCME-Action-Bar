@@ -19,8 +19,7 @@ public final class ActionBar extends JavaPlugin {
 
         if (Bukkit.getPluginManager().getPlugin("VentureChat") != null) {
             actionBarManager.register(new ChatChannelHudElement(
-                new VentureChatChannelProvider(),
-                getConfig()
+                new VentureChatChannelProvider()
             ));
         }
 

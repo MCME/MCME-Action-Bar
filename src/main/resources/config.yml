@@ -1,17 +1,3 @@
 # How often the action bar will refresh.
 # Must be lower than 60 ticks (3 seconds) as that is when the action bar fades away.
 update-interval-ticks: 40
-
-# Each channel maps to a Unicode character which the resource pack maps to a PNG image
-# The RP also controls the position of this image, to add a new indicator a new mapping
-# has to be created inside the default.json of the resource pack
-chat-indicator:
-  # The glyph shown when no channel-specific entry matches.
-  default: "\uE200"
-  # These channel names must match the channel configured in the Chat plugin
-  channels:
-    global: "" # Display nothing for the global channel
-    local: "\uE201"
-    tour: "\uE202"
-    job-general: "\uE203"
-    staff: "\uE204"
