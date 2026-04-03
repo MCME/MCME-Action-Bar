@@ -20,7 +20,10 @@ public class ChatChannelHudElement implements HudElement {
         "local",       "\uE201",
         "tour",        "\uE202",
         "job-general", "\uE203",
-        "staff",       "\uE204"
+        "staff",       "\uE204",
+        "mod",         "\uE205",
+        "help",        "\uE206",
+        "roleplay",    "\uE207"
     );
 
     private final ChatChannelProvider provider;
