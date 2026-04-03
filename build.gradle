@@ -34,7 +34,6 @@ processResources {
     }
 }
 
-
 // Replace the normal gradle build with shadowJar
 // prevents the non fat JAR from ever being built
 jar {
