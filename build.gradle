@@ -5,11 +5,11 @@ import java.nio.file.Paths
 plugins {
     id 'java'
     id 'com.gradleup.shadow' version '9.3.1'
-    id 'xyz.jpenilla.run-paper' version '3.0.2'
+    id 'xyz.jpenilla.run-paper' version '3.1.0'
 }
 
 group = 'com.mcmiddleearth'
-version = '1.0'
+version = '1.1'
 
 repositories {
     mavenCentral()
@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.2.build.+")
     compileOnly files(Paths.get(System.getProperty('user.home'), "MCME", "dev", "jars", "VentureChat.jar"))
 }
 
@@ -45,7 +45,7 @@ shadowJar {
 }
 
 // https://docs.gradle.org/current/dsl/org.gradle.api.plugins.JavaPluginExtension.html
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 java {
     toolchain {
         // Intellij should pick this up
@@ -55,7 +55,7 @@ java {
 
 tasks {
     runServer {
-        minecraftVersion("1.21")
+        minecraftVersion("26.2")
     }
 }
 
