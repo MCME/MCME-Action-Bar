@@ -73,20 +73,53 @@ tasks.register('generateFontJson') {
         def config = new ConfigSlurper().parse(manifest.toURI().toURL())
         def providers = []
 
+        def negativeSpaces = [:]
+
         // HUD elements — ascent computed from elementId, no manual formula needed
         config.hudElements.each { element ->
             int elementId = element.elementId
             int ascent = -(((elementId + 1024) << 13) + 4095)
+            int height = (element.height ?: 8) as int
+            def advances = [] as Set
             element.glyphs.each { glyph ->
                 def provider = [type: 'bitmap', file: glyph.image, ascent: ascent, chars: [glyph['char']]]
-                if (element.height) provider.height = element.height as int
+                if (element.height) provider.height = height
                 providers << provider
+                advances << glyphAdvance(glyph.image as String, height)
             }
+
+            // Each element is followed by a negative space that cancels its glyph's advance, so the
+            // action bar string always has zero width and elements never shift each other
+            if (advances.size() != 1) {
+                throw new GradleException("HUD element ${elementId}: all glyphs must have the same advance, got ${advances}")
+            }
+            String negativeSpaceChar = new String(Character.toChars(0xF000 + elementId))
+            negativeSpaces[negativeSpaceChar] = -advances.first()
+            println "Element ${elementId}: advance ${advances.first()}"
         }
+
+        providers << [type: 'space', advances: negativeSpaces]
 
         output.text = JsonOutput.prettyPrint(
                 JsonOutput.toJson([providers: providers])
         )
         println "Generated ${output} (${providers.size()} providers)"
     }
+}
+
+// Mirrors Minecraft's BitmapProvider: the advance is the rightmost non-transparent column,
+// scaled to the glyph height, rounded, plus 1px spacing
+int glyphAdvance(String resourceLocation, int height) {
+    def (namespace, path) = resourceLocation.split(':')
+    def image = javax.imageio.ImageIO.read(file("resourcepack/assets/${namespace}/textures/${path}"))
+    int actualWidth = 0
+    for (int x = image.width - 1; x >= 0 && actualWidth == 0; x--) {
+        for (int y = 0; y < image.height; y++) {
+            if ((image.getRGB(x, y) >>> 24) != 0) {
+                actualWidth = x + 1
+                break
+            }
+        }
+    }
+    return (int) (0.5d + actualWidth * (height / (float) image.height)) + 1
 }

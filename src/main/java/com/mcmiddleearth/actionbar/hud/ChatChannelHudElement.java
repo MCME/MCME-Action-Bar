@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class ChatChannelHudElement implements HudElement {
 
+    private static final int ELEMENT_ID = 1;
     private static final String DEFAULT_SYMBOL = "\uE200";
 
     // Maps VentureChat channel names to their resource pack glyphs.
@@ -40,6 +41,6 @@ public class ChatChannelHudElement implements HudElement {
         String symbol = CHANNEL_SYMBOLS.getOrDefault(channelName.toLowerCase(), DEFAULT_SYMBOL);
         if (symbol.isEmpty()) return null;
 
-        return Component.text(symbol);
+        return HudElement.zeroWidth(ELEMENT_ID, symbol);
     }
 }
