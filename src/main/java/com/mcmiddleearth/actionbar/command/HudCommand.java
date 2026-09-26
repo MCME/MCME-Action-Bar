@@ -15,7 +15,10 @@ import org.bukkit.entity.Player;
 /** /hud <show|hide> <element> */
 public final class HudCommand {
 
-    private enum Action { SHOW, HIDE }
+    private enum Action {
+        SHOW,
+        HIDE
+    }
 
     private HudCommand() {}
 
@@ -24,21 +27,24 @@ public final class HudCommand {
 
         for (Action action : Action.values()) {
             root.then(Commands.literal(action.name().toLowerCase())
-                .then(Commands.argument("element", StringArgumentType.word())
-                    .suggests((ctx, builder) -> {
-                        manager.getElementIds().stream()
-                            .filter(id -> id.startsWith(builder.getRemainingLowerCase()))
-                            .forEach(builder::suggest);
-                        return builder.buildFuture();
-                    })
-                    .executes(ctx -> execute(ctx, action, manager, preferences))));
+                    .then(Commands.argument("element", StringArgumentType.word())
+                            .suggests((ctx, builder) -> {
+                                manager.getElementIds().stream()
+                                        .filter(id -> id.startsWith(builder.getRemainingLowerCase()))
+                                        .forEach(builder::suggest);
+                                return builder.buildFuture();
+                            })
+                            .executes(ctx -> execute(ctx, action, manager, preferences))));
         }
 
         return root.build();
     }
 
-    private static int execute(CommandContext<CommandSourceStack> ctx, Action action,
-                               ActionBarManager manager, HudPreferences preferences) {
+    private static int execute(
+            CommandContext<CommandSourceStack> ctx,
+            Action action,
+            ActionBarManager manager,
+            HudPreferences preferences) {
         // The executor is who the command runs as, so `/execute as <player> run hud ...` changes that player's HUD
         if (!(ctx.getSource().getExecutor() instanceof Player player)) {
             ctx.getSource().getSender().sendMessage(Component.text("Only players have a HUD.", NamedTextColor.RED));
@@ -56,9 +62,7 @@ public final class HudCommand {
         preferences.setHidden(player, elementId, hide);
 
         player.sendMessage(Component.text(
-            elementId + (hide ? " hidden." : " shown."),
-            hide ? NamedTextColor.YELLOW : NamedTextColor.GREEN
-        ));
+                elementId + (hide ? " hidden." : " shown."), hide ? NamedTextColor.YELLOW : NamedTextColor.GREEN));
         return Command.SINGLE_SUCCESS;
     }
 }

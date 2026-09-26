@@ -20,7 +20,8 @@ public class LuckPermsHudPreferences implements HudPreferences {
     @Override
     public boolean isHidden(Player player, String elementId) {
         // Reads LuckPerms' in-memory cache, cheap enough to call every update
-        String value = luckPerms.getPlayerAdapter(Player.class).getMetaData(player).getMetaValue(KEY_PREFIX + elementId);
+        String value =
+                luckPerms.getPlayerAdapter(Player.class).getMetaData(player).getMetaValue(KEY_PREFIX + elementId);
         return Boolean.parseBoolean(value);
     }
 

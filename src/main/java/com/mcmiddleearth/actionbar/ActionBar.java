@@ -26,9 +26,7 @@ public final class ActionBar extends JavaPlugin {
         actionBarManager = new ActionBarManager(preferences);
 
         if (Bukkit.getPluginManager().isPluginEnabled("VentureChat")) {
-            actionBarManager.register(new ChatChannelHudElement(
-                new VentureChatChannelProvider()
-            ));
+            actionBarManager.register(new ChatChannelHudElement(new VentureChatChannelProvider()));
         }
 
         // Nothing to show, so skip the update loop and /hud entirely
@@ -38,12 +36,13 @@ public final class ActionBar extends JavaPlugin {
         }
 
         if (hasLuckPerms) {
-            getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
-                event.registrar().register(
-                    HudCommand.create(actionBarManager, preferences),
-                    "Show or hide HUD elements"
-                )
-            );
+            getLifecycleManager()
+                    .registerEventHandler(
+                            LifecycleEvents.COMMANDS,
+                            event -> event.registrar()
+                                    .register(
+                                            HudCommand.create(actionBarManager, preferences),
+                                            "Show or hide HUD elements"));
         }
 
         int tickInterval = getConfig().getInt("update-interval-ticks", 40);
@@ -53,6 +52,7 @@ public final class ActionBar extends JavaPlugin {
     public static ActionBar getInstance() {
         return instance;
     }
+
     public ActionBarManager getActionBarManager() {
         return actionBarManager;
     }

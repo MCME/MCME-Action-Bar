@@ -2,11 +2,10 @@ package com.mcmiddleearth.actionbar.hud;
 
 import com.mcmiddleearth.actionbar.HudElement;
 import com.mcmiddleearth.actionbar.chat.ChatChannelProvider;
+import java.util.Map;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 public class ChatChannelHudElement implements HudElement {
 
@@ -17,15 +16,14 @@ public class ChatChannelHudElement implements HudElement {
     // Empty string means no indicator is shown for that channel.
     // Each glyph is a bitmap font character defined in the resource pack's font/default.json.
     private static final Map<String, String> CHANNEL_SYMBOLS = Map.of(
-        "global",      "",
-        "local",       "\uE201",
-        "tour",        "\uE202",
-        "job-general", "\uE203",
-        "staff",       "\uE204",
-        "mod",         "\uE205",
-        "help",        "\uE206",
-        "roleplay",    "\uE207"
-    );
+            "global", "",
+            "local", "\uE201",
+            "tour", "\uE202",
+            "job-general", "\uE203",
+            "staff", "\uE204",
+            "mod", "\uE205",
+            "help", "\uE206",
+            "roleplay", "\uE207");
 
     private final ChatChannelProvider provider;
 

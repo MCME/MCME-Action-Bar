@@ -1,13 +1,13 @@
 package com.mcmiddleearth.actionbar;
 
+import com.mcmiddleearth.actionbar.preferences.HudPreferences;
+import java.util.ArrayList;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.ShadowColor;
-import com.mcmiddleearth.actionbar.preferences.HudPreferences;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ActionBarManager implements Runnable {
 
@@ -38,10 +38,7 @@ public class ActionBarManager implements Runnable {
 
             if (!parts.isEmpty()) {
                 player.sendActionBar(
-                    Component
-                        .join(JoinConfiguration.noSeparators(), parts)
-                        .shadowColor(ShadowColor.none())
-                );
+                        Component.join(JoinConfiguration.noSeparators(), parts).shadowColor(ShadowColor.none()));
             }
         }
     }
