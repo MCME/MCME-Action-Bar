@@ -22,6 +22,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.2.build.+")
     compileOnly files(Paths.get(System.getProperty('user.home'), "MCME", "dev", "jars", "VentureChat.jar"))
+    compileOnly("net.luckperms:api:5.5")
 }
 
 // Dynamically adding the version to the paper plugin.yml
@@ -56,6 +57,9 @@ java {
 tasks {
     runServer {
         minecraftVersion("26.2")
+        downloadPlugins {
+            modrinth("luckperms", "v5.5.71-bukkit")
+        }
     }
 }
 
