@@ -3,6 +3,10 @@
 A PaperMC plugin that renders custom HUD elements via the action bar, using a shader-based 
 technique to position them anywhere on screen, independent of GUI scale.
 
+## Building
+Requires JDK 25. Run `./gradlew build`; the plugin jar is written to `build/libs/`.
+`./gradlew runServer` starts a test server with LuckPerms, and `./gradlew spotlessApply` formats the code.
+
 ## How it works
 The plugin sends special Unicode characters to the action bar. Each character has a huge 
 negative font ascent that pushes it off-screen. A custom vertex shader (`text.vsh`) detects these 
@@ -30,8 +34,14 @@ Implement the `HudElement` interface and register it with `ActionBarManager`:
 ```java
 public class MyHudElement implements HudElement {
     @Override
+    public String id() {
+        return "my-element"; // Used by /hud and the stored preference
+    }
+
+    @Override
     public @Nullable Component getElement(Player player) {
-        return Component.text("\uE208");
+        // zeroWidth appends the element's negative space so it never shifts other elements
+        return HudElement.zeroWidth(2, "\uE208");
     }
 }
 ```
@@ -39,3 +49,9 @@ public class MyHudElement implements HudElement {
 ```java
 actionBarManager.register(new MyHudElement());
 ```
+
+## Hiding elements
+Players can run `/hud <show|hide> <element>` to hide individual elements. The setting is stored as
+LuckPerms meta (`mcme-actionbar-hidden-<element>=true`) with no server context, so it follows players across
+backends that share a LuckPerms database. Setting that meta on a group hides the element by default for its members.
+Without LuckPerms installed, `/hud` is not registered and every element is shown.
