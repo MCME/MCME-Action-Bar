@@ -35,6 +35,11 @@ java {
     }
 }
 
+// Points git at the repo's hooks so the pre-commit formatter is enabled for everyone who builds
+if (file(".git").exists()) {
+    providers.exec { commandLine("git", "config", "core.hooksPath", ".githooks") }.result.get()
+}
+
 spotless {
     java {
         palantirJavaFormat()
