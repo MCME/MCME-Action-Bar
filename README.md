@@ -12,6 +12,13 @@ The plugin sends special Unicode characters to the action bar. Each character ha
 negative font ascent that pushes it off-screen. A custom vertex shader (`text.vsh`) detects these 
 off-screen vertices, decodes an element ID from the Y position, and repositions the character to a configured screen anchor.
 
+### Why the action bar instead of boss bars?
+BetterHud uses the same shader technique with boss bars. The action bar is simpler: it needs only Paper's
+`sendActionBar`, with no boss bars to create and track per player, no boss bar textures to hide, and no
+shifting when the game adds its own bars (e.g. raids, the Wither). The trade-off is that action bar
+messages fade after ~3 seconds, so they are resent every `update-interval-ticks`, and other plugins'
+action bar messages briefly replace the HUD.
+
 ## Adding a new HUD element
 Three things need to happen: resource pack setup, shader positioning, and plugin code.
 
@@ -35,7 +42,7 @@ Implement the `HudElement` interface and register it with `ActionBarManager`:
 public class MyHudElement implements HudElement {
     @Override
     public String id() {
-        return "my-element"; // Used by /hud and the stored preference
+        return "my-element"; // Used by /hudmcme and the stored preference
     }
 
     @Override
@@ -51,7 +58,7 @@ actionBarManager.register(new MyHudElement());
 ```
 
 ## Hiding elements
-Players can run `/hud <show|hide> <element>` to hide individual elements. The setting is stored as
+Players can run `/hudmcme <show|hide> <element>` to hide individual elements. The setting is stored as
 LuckPerms meta (`mcme-actionbar-hidden-<element>=true`) with no server context, so it follows players across
 backends that share a LuckPerms database. Setting that meta on a group hides the element by default for its members.
-Without LuckPerms installed, `/hud` is not registered and every element is shown.
+Without LuckPerms installed, `/hudmcme` is not registered and every element is shown.

@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 public interface HudElement {
-    /** Identifies the element in /hud and in the player's stored preferences. */
+    /** Identifies the element in /hudmcme and in the player's stored preferences. */
     String id();
 
     @Nullable

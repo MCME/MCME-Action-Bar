@@ -12,7 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
-/** /hud <show|hide> <element> */
+/** /hudmcme <show|hide> <element> */
 public final class HudCommand {
 
     private enum Action {
@@ -23,7 +23,7 @@ public final class HudCommand {
     private HudCommand() {}
 
     public static LiteralCommandNode<CommandSourceStack> create(ActionBarManager manager, HudPreferences preferences) {
-        var root = Commands.literal("hud");
+        var root = Commands.literal("hudmcme");
 
         for (Action action : Action.values()) {
             root.then(Commands.literal(action.name().toLowerCase())

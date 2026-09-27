@@ -20,7 +20,7 @@ public final class ActionBar extends JavaPlugin {
         saveDefaultConfig();
 
         // LuckPerms stores preferences in its shared database so they follow players across backends.
-        // Without it every element is always shown and /hud is not registered.
+        // Without it every element is always shown and /hudmcme is not registered.
         boolean hasLuckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
         HudPreferences preferences = hasLuckPerms ? new LuckPermsHudPreferences() : HudPreferences.ALWAYS_SHOWN;
         actionBarManager = new ActionBarManager(preferences);
@@ -29,7 +29,7 @@ public final class ActionBar extends JavaPlugin {
             actionBarManager.register(new ChatChannelHudElement(new VentureChatChannelProvider()));
         }
 
-        // Nothing to show, so skip the update loop and /hud entirely
+        // Nothing to show, so skip the update loop and /hudmcme entirely
         if (actionBarManager.getElementIds().isEmpty()) {
             getLogger().info("No HUD elements registered, nothing to display");
             return;
