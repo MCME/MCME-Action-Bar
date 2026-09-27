@@ -32,7 +32,7 @@ public class ActionBarManager implements Runnable {
             List<Component> parts = new ArrayList<>();
             for (HudElement element : elements) {
                 if (preferences.isHidden(player, element.id())) continue;
-                Component c = element.getElement(player);
+                Component c = element.getComponent(player);
                 if (c != null) parts.add(c);
             }
 

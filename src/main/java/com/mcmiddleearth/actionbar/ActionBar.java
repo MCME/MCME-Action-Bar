@@ -19,8 +19,7 @@ public final class ActionBar extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
 
-        // LuckPerms stores preferences in its shared database so they follow players across backends.
-        // Without it every element is always shown and /hudmcme is not registered.
+        // LuckPerms is used to store preferences so that preferences are global and not tied to each backend
         boolean hasLuckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
         HudPreferences preferences = hasLuckPerms ? new LuckPermsHudPreferences() : HudPreferences.ALWAYS_SHOWN;
         actionBarManager = new ActionBarManager(preferences);

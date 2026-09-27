@@ -37,7 +37,7 @@ public class ChatChannelHudElement implements HudElement {
     }
 
     @Override
-    public @Nullable Component getElement(Player player) {
+    public @Nullable Component getComponent(Player player) {
         String channelName = provider.getActiveChannelName(player);
         if (channelName == null) return null;
 
